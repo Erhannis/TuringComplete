@@ -20,4 +20,9 @@ victory mechanisms
   perhaps the machine is reset and runs for N steps, every turn?
     would sorta need an app or something
     and feels like a different kind of game
-  
+
+
+misc thoughts
+  play transitions in pieces?
+  collaborative (easy), vs competetive (hard)?
+    collaborative could turn into one person directing and the others twiddling thumbs, though
