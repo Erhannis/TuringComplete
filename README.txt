@@ -26,3 +26,9 @@ misc thoughts
   play transitions in pieces?
   collaborative (easy), vs competetive (hard)?
     collaborative could turn into one person directing and the others twiddling thumbs, though
+  permit iterate without play card?
+    otherwise, just wasting cards on irrelevant slots
+  time limit?
+
+problems:
+  tendency towards just overwriting the impending state

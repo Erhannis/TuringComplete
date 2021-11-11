@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as m;
+import 'package:flutter/services.dart';
 import 'package:turing_complete_flutter/tc_engine.dart';
 
 const STATES = 4;
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    //SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     final app = MaterialApp(
       title: 'TuringComplete',
       theme: ThemeData(
@@ -79,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _reset() {
+    engine = new TcEngine<int>(BLANK);
     for (int state = 0; state < 4; state++) {
       for (int symbol = 0; symbol < 2; symbol++) {
         engine.playTransition(state, symbol, new StateTransition(Dir.STAY, symbol, state));
@@ -94,10 +97,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       //backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
+      // appBar: AppBar(
+      //   title: Text(widget.title),
+      // ),
+      body: SafeArea(child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -106,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Spacer(),
               OutlinedButton(onPressed: () => setState(() => engine.playTransition(rand.nextInt(STATES), rand.nextInt(SYMBOLS), new StateTransition(rand.nextElement(Dir.values), rand.nextInt(SYMBOLS), rand.nextInt(STATES)))), child: Text("Rand"),),
               Spacer(),
-              Spacer(),
+              DummyButton(child: Text("X")),
             ]),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               OutlinedButton(onPressed: () => setState(() => engine.prev()), child: Text("<-"),),
@@ -151,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-    );
+    ));
   }
 }
 
