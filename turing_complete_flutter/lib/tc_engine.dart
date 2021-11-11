@@ -132,8 +132,8 @@ class TcEngine<SYMBOL> {
     return tape.map((e) => new SpecialString("$e", e == head)).toList();
   }
 
-  List<List<SpecialString>> tableView() {
-    var result = List<List<SpecialString>>.empty(growable: true);
+  List<List<Pair<Pair<int, SYMBOL>, SpecialString>>> tableView() {
+    var result = List<List<Pair<Pair<int, SYMBOL>, SpecialString>>>.empty(growable: true);
     var states = new HashSet<int>();
     var symbols = new HashSet<SYMBOL>();
     for (Pair<int, SYMBOL> k in stateTransitions.keys) {
@@ -141,7 +141,7 @@ class TcEngine<SYMBOL> {
       symbols.add(k.b);
     }
     for (SYMBOL symbol in symbols) {
-      result.add(states.map((state) => new SpecialString("${stateTransitions[Pair(state, symbol)] ?? new StateTransition(Dir.STAY, symbol, state)}", (state == this.state && symbol == this.head.symbol))).toList());
+      result.add(states.map((state) => Pair(Pair(state, symbol), new SpecialString("${stateTransitions[Pair(state, symbol)] ?? new StateTransition(Dir.STAY, symbol, state)}", (state == this.state && symbol == this.head.symbol)))).toList());
     }
     return result;
   }
