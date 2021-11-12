@@ -5,6 +5,8 @@ import 'package:flutter/material.dart' as m;
 import 'package:flutter/services.dart';
 import 'package:turing_complete_flutter/tc_engine.dart';
 
+import 'card_gen.dart';
+
 const STATES = 4;
 const SYMBOLS = 2;
 const BLANK = 0;
@@ -109,7 +111,26 @@ class _MyHomePageState extends State<MyHomePage> {
               Spacer(),
               OutlinedButton(onPressed: () => setState(() => engine.playTransition(rand.nextInt(STATES), rand.nextInt(SYMBOLS), new StateTransition(rand.nextElement(Dir.values), rand.nextInt(SYMBOLS), rand.nextInt(STATES)))), child: Text("Rand"),),
               Spacer(),
-              DummyButton(child: Text("X")),
+              OutlinedButton(onPressed: () {
+                List<List<String>> cardsFront = [];
+                List<List<String>> cardsBack = [];
+                for (int i = 0; i < 10; i++) {
+                  cardsFront.add(["0"]);
+                  cardsBack.add(["1"]);
+                }
+                for (int state = 0; state < STATES; state++) {
+                  for (int symbol = 0; symbol < SYMBOLS; symbol++) {
+                    for (Dir dir in Dir.values) {
+                      List<String> card = [symbol.toString(), dir.shortString, state.toString()];
+                      print(card);
+                      cardsFront.add(card);
+                      cardsBack.add([]);
+                    }
+                  }
+                }
+                genTtsCards(cardsFront, filename: "cardsFront.png");
+                genTtsCards(cardsBack, filename: "cardsBack.png");
+              }, child: Text("Cards")),
             ]),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               OutlinedButton(onPressed: () => setState(() => engine.prev()), child: Text("<-"),),

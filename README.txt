@@ -29,6 +29,11 @@ misc thoughts
   permit iterate without play card?
     otherwise, just wasting cards on irrelevant slots
   time limit?
+  allow discard cards?
 
 problems:
   tendency towards just overwriting the impending state
+    how do we make it worthwhile to think ahead?
+    make changes sticky?
+    maybe transitions can't replace each other?
+  what if two players have overlapping goals - one MUST win before the other?
