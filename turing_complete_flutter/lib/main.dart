@@ -24,7 +24,7 @@ const C_GREENTEXT = 0xFF44CC99;
 const C_PLAIN_BG = 0xFF222222;
 
 const STATE_COLORS = [0xFFDB3AF8, 0xFF0000B8, 0xFF5A10E5, 0xFFEDD5F5];
-const SYMBOL_COLORS = [0xFFC0E3AF, 0xFF345835, 0xFFC8FFCB, 0xFF79A121];
+const SYMBOL_COLORS = [0xFFC0E3AF, 0xFF345835, 0xFF8CFFCB, 0xFF79A121];
 
 extension DirColors on Dir {
   int color() {
@@ -174,7 +174,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     cardsFront.add(cg.Card([cg.Text([SYMBOLS[0]], color: SYMBOL_COLORS[0])], bg: cg.ExtColor.invertXor(SYMBOL_COLORS[0])));
                     cardsBack.add(cg.Card([cg.Text([SYMBOLS[1]], color: SYMBOL_COLORS[1])], bg: cg.ExtColor.invertXor(SYMBOL_COLORS[1])));
                   } else if (SYMBOLS.length == 4) {
-                    cardsFront.add(cg.Card([cg.Text([SYMBOLS[0]], color: SYMBOL_COLORS[0])], bg: cg.ExtColor.invertXor(SYMBOL_COLORS[0])));
+                    cardsFront.add(cg.Card([
+                      cg.Text([SYMBOLS[0],"",""], angle: 0, color: SYMBOL_COLORS[0]),
+                      cg.Text([SYMBOLS[1],"",""], angle: 180, color: SYMBOL_COLORS[1]),
+                    ], bg: C_PLAIN_BG));
+                    cardsBack.add(cg.Card([
+                      cg.Text([SYMBOLS[2],"",""], angle: 0, color: SYMBOL_COLORS[2]),
+                      cg.Text([SYMBOLS[3],"",""], angle: 180, color: SYMBOL_COLORS[3]),
+                    ], bg: C_PLAIN_BG));
+                  } else {
+                    num angle = 360.0 / SYMBOLS.length;
+                    cardsFront.add(cg.Card(
+                      List<cg.Text>.generate(SYMBOLS.length, (s) => cg.Text([SYMBOLS[s],"",""], angle: s*angle, color: SYMBOL_COLORS[s])),
+                      bg: cg.ExtColor.invertXor(SYMBOL_COLORS[0]))
+                    );
                     cardsBack.add(symbolBack);
                   }
                 }

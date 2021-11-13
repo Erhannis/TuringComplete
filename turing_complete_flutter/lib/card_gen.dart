@@ -27,8 +27,9 @@ class Text {
   List<String> lines;
   int color;
   BitmapFont? font;
+  num angle;
 
-  Text(this.lines, {this.pos = TextPos.MID_CENTER, this.color = BLACK, this.font}) {
+  Text(this.lines, {this.pos = TextPos.MID_CENTER, this.color = BLACK, this.font, this.angle = 0}) {
     if (this.font == null) {
       this.font = FONT_1;
     }
@@ -85,6 +86,9 @@ Image genCard(Card card) {
       case TextPos.BOT_RIGHT:
       // TODO: Handle this case.
         break;
+    }
+    if (text.angle != 0) {
+      textimage = im.copyRotate(textimage, text.angle);
     }
     drawImage(ci, textimage, dstX: xo, dstY: yo);
   }
