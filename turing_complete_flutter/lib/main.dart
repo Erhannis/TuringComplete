@@ -19,9 +19,11 @@ const HAND_LIMIT = 7;
 const C_LEFT = 0xFF4499CC;
 const C_STAY = 0xFF444444;
 const C_RIGHT = 0xFFCC9944;
-const C_HEAD_BG = 0xFF302A22;
 const C_GREENTEXT = 0xFF44CC99;
-const C_PLAIN_BG = 0xFF222222;
+const C_HEAD_BG = 0xFF302A22;
+//const C_SYMBOL_BG = 0xFF222A30;
+const C_SYMBOL_BG = 0xFF2A3022;
+const C_TRANSITION_BG = 0xFF222222;
 
 const STATE_COLORS = [0xFFDB3AF8, 0xFF0000B8, 0xFF5A10E5, 0xFFEDD5F5];
 const SYMBOL_COLORS = [0xFFC0E3AF, 0xFF345835, 0xFF8CFFCB, 0xFF79A121];
@@ -158,11 +160,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 final symbolBack = cg.Card([
                   cg.Text(["TC", ""], color: C_GREENTEXT),
                   cg.Text(["", "SYMBOL"], font: cg.FONT_05, color: C_GREENTEXT),
-                ], bg: C_PLAIN_BG);
+                ], bg: C_SYMBOL_BG);
                 final transitionBack = cg.Card([
                   cg.Text(["TC", ""], color: C_GREENTEXT),
                   cg.Text(["", "TRANSITION"], font: cg.FONT_025, color: C_GREENTEXT),
-                ], bg: C_PLAIN_BG);
+                ], bg: C_TRANSITION_BG);
                 //TODO Fix for arbitrary symbols
                 cardsFront.add(cg.Card([
                   cg.Text(["<   "], color: C_LEFT),
@@ -177,11 +179,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     cardsFront.add(cg.Card([
                       cg.Text([SYMBOLS[0],"",""], angle: 0, color: SYMBOL_COLORS[0]),
                       cg.Text([SYMBOLS[1],"",""], angle: 180, color: SYMBOL_COLORS[1]),
-                    ], bg: C_PLAIN_BG));
+                    ], bg: C_SYMBOL_BG));
                     cardsBack.add(cg.Card([
                       cg.Text([SYMBOLS[2],"",""], angle: 0, color: SYMBOL_COLORS[2]),
                       cg.Text([SYMBOLS[3],"",""], angle: 180, color: SYMBOL_COLORS[3]),
-                    ], bg: C_PLAIN_BG));
+                    ], bg: C_SYMBOL_BG));
                   } else {
                     num angle = 360.0 / SYMBOLS.length;
                     cardsFront.add(cg.Card(
@@ -207,7 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         cg.Text([symbol.toString(), "", ""], color: SYMBOL_COLORS[SYMBOLS.indexOf(symbol)]),
                         cg.Text(["", dir.shortString, ""], color: dir.color()),
                         cg.Text(["", "", state.toString()], color: STATE_COLORS[state]),
-                      ], bg: C_PLAIN_BG);
+                      ], bg: C_TRANSITION_BG);
                       cardsFront.add(card);
                       cardsBack.add(transitionBack);
                     }
