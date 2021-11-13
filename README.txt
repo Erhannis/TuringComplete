@@ -30,6 +30,10 @@ misc thoughts
     otherwise, just wasting cards on irrelevant slots
   time limit?
   allow discard cards?
+    refresh hand at cost of turn, perhaps
+  start with random table, for something to work with?
+  could do themed decks - 0/1, A/B/C/D, A/T/C/G, C/A/T/D/O/G
+  note which direction is up, on a card
 
 problems:
   tendency towards just overwriting the impending state
@@ -37,3 +41,19 @@ problems:
     make changes sticky?
     maybe transitions can't replace each other?
   what if two players have overlapping goals - one MUST win before the other?
+
+
+configurations
+  symbols
+    01, ABCD
+  competetive, cooperative
+  hand size
+  action count per turn
+  action order
+    place transition, step, next person
+  can discard?
+    at will?
+    whole hand?
+    uses turn?
+  MUST place?
+  MUST step?

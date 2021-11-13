@@ -2,15 +2,42 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as m;
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:turing_complete_flutter/tc_engine.dart';
 
-import 'card_gen.dart';
+import 'card_gen.dart' as cg;
+import 'package:image/image.dart' as im;
+
+typedef Symbol = String;
 
 const STATES = 4;
-const SYMBOLS = 2;
-const BLANK = 0;
-const HAND_LIMIT = 5;
+const SYMBOLS = ["A", "B", "C", "D"];
+const BLANK = "A";
+const HAND_LIMIT = 7;
+
+const C_LEFT = 0xFF4499CC;
+const C_STAY = 0xFF444444;
+const C_RIGHT = 0xFFCC9944;
+const C_HEAD_BG = 0xFF302A22;
+const C_GREENTEXT = 0xFF44CC99;
+const C_PLAIN_BG = 0xFF222222;
+
+const STATE_COLORS = [0xFFDB3AF8, 0xFF0000B8, 0xFF5A10E5, 0xFFEDD5F5];
+const SYMBOL_COLORS = [0xFFC0E3AF, 0xFF345835, 0xFFC8FFCB, 0xFF79A121];
+
+extension DirColors on Dir {
+  int color() {
+    switch (this) {
+      case Dir.LEFT:
+        return C_LEFT;
+      case Dir.STAY:
+        return C_STAY;
+      case Dir.RIGHT:
+        return C_RIGHT;
+    }
+  }
+}
 
 void main() {
   runApp(MyApp());
@@ -20,6 +47,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    //debugPaintSizeEnabled = true;
+    debugPaintSizeEnabled = false;
     //SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     final app = MaterialApp(
       title: 'TuringComplete',
@@ -58,8 +87,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Random rand = new Random();
-  TcEngine<int> engine = new TcEngine(BLANK);
-  List<StateTransition<int>> hand = List.empty(growable: true);
+  TcEngine<Symbol> engine = new TcEngine(BLANK);
+  List<StateTransition<Symbol>> hand = List.empty(growable: true);
 
   _MyHomePageState() {
     _reset();
@@ -70,12 +99,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // ...Dart doesn't allow overloading?  Seriously?
-  void _discardByCard(StateTransition<int> card) {
+  void _discardByCard(StateTransition<Symbol> card) {
     hand.remove(card);
   }
 
   void _drawCard() {
-    var card = new StateTransition<int>(rand.nextElement(Dir.values), rand.nextInt(SYMBOLS), rand.nextInt(STATES));
+    var card = randTransition();
     hand.add(card);
     while (hand.length > HAND_LIMIT) {
       _discardByIndex(0);
@@ -83,9 +112,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _reset() {
-    engine = new TcEngine<int>(BLANK);
-    for (int state = 0; state < 4; state++) {
-      for (int symbol = 0; symbol < 2; symbol++) {
+    engine = new TcEngine<Symbol>(BLANK);
+    for (int state = 0; state < STATES; state++) {
+      for (Symbol symbol in SYMBOLS) {
         engine.playTransition(state, symbol, new StateTransition(Dir.STAY, symbol, state));
       }
     }
@@ -93,6 +122,10 @@ class _MyHomePageState extends State<MyHomePage> {
     for (int i = 0; i < HAND_LIMIT; i++){
       _drawCard();
     }
+  }
+
+  StateTransition<Symbol> randTransition() {
+    return new StateTransition(rand.nextElement(Dir.values), rand.nextElement(SYMBOLS), rand.nextInt(STATES));
   }
 
   @override
@@ -109,27 +142,71 @@ class _MyHomePageState extends State<MyHomePage> {
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               OutlinedButton(onPressed: () => setState(_reset), child: Text("Reset"),),
               Spacer(),
-              OutlinedButton(onPressed: () => setState(() => engine.playTransition(rand.nextInt(STATES), rand.nextInt(SYMBOLS), new StateTransition(rand.nextElement(Dir.values), rand.nextInt(SYMBOLS), rand.nextInt(STATES)))), child: Text("Rand"),),
+              OutlinedButton(onPressed: () => setState(() => engine.playTransition(rand.nextInt(STATES), rand.nextElement(SYMBOLS), randTransition())),
+                onLongPress: () => setState(() {
+                  for (int state = 0; state < STATES; state++) {
+                    for (Symbol symbol in SYMBOLS) {
+                      engine.playTransition(state, symbol, randTransition());
+                    }
+                  }
+                }), child: Text("Rand"),),
               Spacer(),
               OutlinedButton(onPressed: () {
-                List<List<String>> cardsFront = [];
-                List<List<String>> cardsBack = [];
+                bool ROLL20 = false;
+                List<cg.Card> cardsFront = [];
+                List<cg.Card> cardsBack = [];
+                final symbolBack = cg.Card([
+                  cg.Text(["TC", ""], color: C_GREENTEXT),
+                  cg.Text(["", "SYMBOL"], font: cg.FONT_05, color: C_GREENTEXT),
+                ], bg: C_PLAIN_BG);
+                final transitionBack = cg.Card([
+                  cg.Text(["TC", ""], color: C_GREENTEXT),
+                  cg.Text(["", "TRANSITION"], font: cg.FONT_025, color: C_GREENTEXT),
+                ], bg: C_PLAIN_BG);
+                //TODO Fix for arbitrary symbols
+                cardsFront.add(cg.Card([
+                  cg.Text(["<   "], color: C_LEFT),
+                  cg.Text(["   >"], color: C_RIGHT),
+                ], bg: C_HEAD_BG));
+                cardsBack.add(cg.Card([cg.Text(["INSTRUCTIONS","GO","HERE"], font: cg.FONT_025, color: C_GREENTEXT)], bg: C_HEAD_BG));
                 for (int i = 0; i < 10; i++) {
-                  cardsFront.add(["0"]);
-                  cardsBack.add(["1"]);
+                  if (SYMBOLS.length == 2) {
+                    cardsFront.add(cg.Card([cg.Text([SYMBOLS[0]], color: SYMBOL_COLORS[0])], bg: cg.ExtColor.invertXor(SYMBOL_COLORS[0])));
+                    cardsBack.add(cg.Card([cg.Text([SYMBOLS[1]], color: SYMBOL_COLORS[1])], bg: cg.ExtColor.invertXor(SYMBOL_COLORS[1])));
+                  } else if (SYMBOLS.length == 4) {
+                    cardsFront.add(cg.Card([cg.Text([SYMBOLS[0]], color: SYMBOL_COLORS[0])], bg: cg.ExtColor.invertXor(SYMBOL_COLORS[0])));
+                    cardsBack.add(symbolBack);
+                  }
                 }
+                if (ROLL20) {
+                  cg.genRoll20Cards(cardsFront, filenameBase: "bitsFront.png");
+                  cg.genRoll20Cards(cardsBack, filenameBase: "bitsBack.png");
+                } else {
+                  cg.genTtsCards(cardsFront, filename: "bitsFront.png");
+                  cg.genTtsCards(cardsBack, filename: "bitsBack.png");
+                }
+                cardsFront = [];
+                cardsBack = [];
                 for (int state = 0; state < STATES; state++) {
-                  for (int symbol = 0; symbol < SYMBOLS; symbol++) {
+                  for (Symbol symbol in SYMBOLS) {
                     for (Dir dir in Dir.values) {
-                      List<String> card = [symbol.toString(), dir.shortString, state.toString()];
-                      print(card);
+                      final card = cg.Card([
+                        cg.Text([symbol.toString(), "", ""], color: SYMBOL_COLORS[SYMBOLS.indexOf(symbol)]),
+                        cg.Text(["", dir.shortString, ""], color: dir.color()),
+                        cg.Text(["", "", state.toString()], color: STATE_COLORS[state]),
+                      ], bg: C_PLAIN_BG);
                       cardsFront.add(card);
-                      cardsBack.add([]);
+                      cardsBack.add(transitionBack);
                     }
                   }
                 }
-                genTtsCards(cardsFront, filename: "cardsFront.png");
-                genTtsCards(cardsBack, filename: "cardsBack.png");
+                if (ROLL20) {
+                  cg.genRoll20Cards(cardsFront, filenameBase: "transitionsFront.png");
+                  cg.genRoll20Cards(cardsBack, filenameBase: "transitionsBack.png");
+                } else {
+                  cg.genTtsCards(cardsFront, filename: "transitionsFront.png");
+                  cg.genTtsCards(cardsBack, filename: "transitionsBack.png");
+                }
               }, child: Text("Cards")),
             ]),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -141,6 +218,15 @@ class _MyHomePageState extends State<MyHomePage> {
             ]),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               OutlinedButton(onPressed: () => setState(() => _drawCard()), child: Text("Draw"),),
+              OutlinedButton(onPressed: () => setState(() {
+                final card = randTransition();
+                if (rand.nextDouble() < 0.8) {
+                  engine.playTransition(engine.state, engine.head.symbol, randTransition());
+                } else {
+                  engine.playTransition(rand.nextInt(STATES), rand.nextElement(SYMBOLS), randTransition());
+                }
+                engine.iterate();
+              }), child: Text("AI"),),
             ]),
             Spacer(),
             Row(children: [Spacer(), ...engine.tapeView().map((e) => new Text(e.text, style: TextStyle(fontWeight: e.special ? FontWeight.w900 : FontWeight.w100),)).toList(), Spacer()],),
@@ -155,12 +241,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 return SizedBox.shrink();
               }
               // This was STUPID.  "Horizontal viewport was given unbounded height" can EAT DIRT.
-              return Row(children: [Spacer(), Expanded(child: GridView.count(shrinkWrap: true, crossAxisCount: elems[0].length, children:
+              return Row(children: [Expanded(child: GridView.count(shrinkWrap: true, crossAxisCount: elems[0].length, children:
               elems.expand((e) => e.map((s) =>
-                  DragTarget<StateTransition<int>>(builder: (context, candidateData, rejectedData) {
-                    return Text(s.b.text, textAlign: TextAlign.center, style: TextStyle(fontWeight: s.b.special ? FontWeight.w900 : FontWeight.w100));
+                  DragTarget<StateTransition<Symbol>>(builder: (context, candidateData, rejectedData) {
+                    return Container(margin: EdgeInsets.all(2), decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade700, width: 0),
+                      borderRadius: BorderRadius.all(Radius.circular(18)),
+                    ),
+                        child: Column(children: [Spacer(), Text(s.b.text, textAlign: TextAlign.center, style: TextStyle(fontWeight: s.b.special ? FontWeight.w900 : FontWeight.w100)), Spacer()]));
                   },
-                  onAccept: (StateTransition<int> card) {
+                  onAccept: (StateTransition<Symbol> card) {
                     setState(() {
                       //engine.playTransition(state, symbol, transition);
                       _discardByCard(card);
@@ -168,10 +258,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       _drawCard();
                     });
                   },),)).toList(),
-              ),),Spacer()]);
+              ),),]);
             }(),
             Spacer(),
-            Row(children: [Spacer(), ...hand.map((e) => Draggable<StateTransition<int>>(data: e, feedback: DummyButton(child: new Text("$e")), child: new OutlinedButton(onPressed: () => print(e), child: Text("$e")), childWhenDragging: DummyButton(child: new Text("X")),)).toList(), Spacer()],)
+            Row(children: [Spacer(), ...hand.map((e) => Draggable<StateTransition<Symbol>>(data: e, feedback: DummyButton(child: new Text("$e")), child: new OutlinedButton(onPressed: () => print(e), child: Text("$e")), childWhenDragging: DummyButton(child: new Text("X")),)).toList(), Spacer()],)
           ],
         ),
       ),

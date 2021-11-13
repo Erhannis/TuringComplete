@@ -11,11 +11,11 @@ extension DirExt on Dir {
   String get shortString {
     switch (this) {
       case Dir.LEFT:
-        return "L";
+        return "<";
       case Dir.STAY:
         return "X";
       case Dir.RIGHT:
-        return "R";
+        return ">";
     }
   }
 }
