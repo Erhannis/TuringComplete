@@ -57,3 +57,15 @@ configurations
     uses turn?
   MUST place?
   MUST step?
+
+
+notes
+  saboteur style?
+  points: how much of goal matched
+  mark X as hard mode?
+  transition slot as goal
+
+  discard hand => no play card, no iterate (lets other players control board more, in exchange)
+  alternate first player between rounds
+  9 tape, play 1 card, iterate 3
+  maybe scale #played & #iterate with #players?

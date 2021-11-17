@@ -12,8 +12,8 @@ import 'package:image/image.dart' as im;
 typedef Symbol = String;
 
 const STATES = 4;
-const SYMBOLS = ["A", "B", "C", "D"];
-const BLANK = "A";
+const SYMBOLS = ["0","1"];
+const BLANK = "0";
 const HAND_LIMIT = 7;
 
 const C_LEFT = 0xFF4499CC;
@@ -173,8 +173,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 cardsBack.add(cg.Card([cg.Text(["INSTRUCTIONS","GO","HERE"], font: cg.FONT_025, color: C_GREENTEXT)], bg: C_HEAD_BG));
                 for (int i = 0; i < 10; i++) {
                   if (SYMBOLS.length == 2) {
-                    cardsFront.add(cg.Card([cg.Text([SYMBOLS[0]], color: SYMBOL_COLORS[0])], bg: cg.ExtColor.invertXor(SYMBOL_COLORS[0])));
-                    cardsBack.add(cg.Card([cg.Text([SYMBOLS[1]], color: SYMBOL_COLORS[1])], bg: cg.ExtColor.invertXor(SYMBOL_COLORS[1])));
+                    cardsFront.add(cg.Card([cg.Text([SYMBOLS[0]], color: SYMBOL_COLORS[0])], bg: SYMBOL_COLORS[1]));
+                    cardsBack.add(cg.Card([cg.Text([SYMBOLS[1]], color: SYMBOL_COLORS[1])], bg: SYMBOL_COLORS[0]));
                   } else if (SYMBOLS.length == 4) {
                     cardsFront.add(cg.Card([
                       cg.Text([SYMBOLS[0],"",""], angle: 0, color: SYMBOL_COLORS[0]),
